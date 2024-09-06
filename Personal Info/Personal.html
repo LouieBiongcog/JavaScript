@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Information Form</title>
+    <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+    <h1>PERSONAL INFORMATION FORM</h1>
+    <div class="container">
+        <form id="info"> 
+            <label for="name">Name</label>
+            <input type="text" id="name"> <br><br>
+
+            <label for="age">Age</label>
+            <input type="number" id="age"> <br><br>
+
+            <label for="hobbies">Hobbies</label>
+            <input type="text" id="hobbies"> <br><br>
+
+            <label for="student">Are you a Student?</label>
+            <input type="checkbox" id="student"> <br><br>
+
+            <button class= "submit" type="submit">Submit</button>
+        </form>
+
+        <h2>Summary</h2>
+        <div id="summary"></div>
+    </div>
+
+    <script>
+        document.getElementById('info').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            let name = document.getElementById('name').value;
+            let age = Number(document.getElementById('age').value);
+            let hobbies = document.getElementById('hobbies').value.split(',');
+            let isStudent = document.getElementById('student').checked;
+
+            const ul = document.getElementById('summary');
+            const li = document.createElement('li');
+            li.className = 'summary-item';
+            li.innerHTML = `
+                <div>Name: <span class="editable" contenteditable="true">${name}</span></div>
+                <div>Age: <span class="editable" contenteditable="true">${age}</span></div>
+                <div>Hobbies: <span class="editable" contenteditable="true">${hobbies.join(', ')}</span></div>
+                <div>Student: <span class="editable" contenteditable="true">${isStudent ? 'Yes' : 'No'}</span></div>
+                <button class="edit">Edit</button><br><br>
+                <button class="delete">Delete</button>
+            `;
+            ul.appendChild(li);
+
+            // Clear
+            document.getElementById('info').reset();
+        });
+
+        document.getElementById('summary').addEventListener('click', function(event) {
+            if (event.target.classList.contains('delete')) {
+                // Remove
+                event.target.closest('li').remove();
+            } else if (event.target.classList.contains('save')) {
+                // Save
+                const li = event.target.closest('li');
+                const editableFields = li.querySelectorAll('.editable');
+                const updatedName = editableFields[0].textContent;
+                const updatedAge = editableFields[1].textContent;
+                const updatedHobbies = editableFields[2].textContent;
+                const updatedStudent = editableFields[3].textContent === 'Yes';
+
+                // Update the saved details
+                editableFields[0].textContent = updatedName;
+                editableFields[1].textContent = updatedAge;
+                editableFields[2].textContent = updatedHobbies;
+                editableFields[3].textContent = updatedStudent ? 'Yes' : 'No';
+
+                // Hide the Save button
+                event.target.style.display = 'none';
+                // Make the fields non-editable
+                editableFields.forEach(field => field.contentEditable = 'false');
+            } else if (event.target.classList.contains('editable')) {
+                // Show the Save button when editing
+                const li = event.target.closest('li');
+                li.querySelector('.save').style.display = 'inline-block';
+                // Make the fields editable
+                event.target.contentEditable = 'true';
+            }
+        });
+    </script>
+</body>
+</html>
